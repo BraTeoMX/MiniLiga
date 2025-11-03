@@ -1,0 +1,83 @@
+<div class="container">
+  <h2>Partidos Pendientes</h2>
+
+  <div class="actions">
+    <button (click)="loadPendingMatches()" [disabled]="loading" class="btn btn-primary">
+      <span *ngIf="loading">Actualizando...</span>
+      <span *ngIf="!loading">Actualizar</span>
+    </button>
+  </div>
+
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="loading && matches.length === 0" class="loading">Cargando partidos...</div>
+
+  <!-- Lista de partidos pendientes -->
+  <div *ngIf="matches.length > 0" class="matches-section">
+    <h3>Partidos por Jugar</h3>
+    <div class="matches-list">
+      <div *ngFor="let match of matches" class="match-card">
+        <div class="match-info">
+          <span class="team home">{{ match.home_team?.name || 'Equipo Local' }}</span>
+          <span class="vs">vs</span>
+          <span class="team away">{{ match.away_team?.name || 'Equipo Visitante' }}</span>
+        </div>
+        <button (click)="selectMatch(match)" class="btn btn-secondary">
+          Registrar Resultado
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulario para registrar resultado -->
+  <div *ngIf="selectedMatch" class="result-form-section">
+    <h3>Registrar Resultado</h3>
+    <div class="match-header">
+      <span class="team home">{{ selectedMatch.home_team?.name }}</span>
+      <span class="vs">vs</span>
+      <span class="team away">{{ selectedMatch.away_team?.name }}</span>
+    </div>
+
+    <form [formGroup]="resultForm" (ngSubmit)="onSubmitResult()" class="result-form">
+      <div class="score-inputs">
+        <div class="score-group">
+          <label>{{ selectedMatch.home_team?.name }}</label>
+          <input
+            type="number"
+            formControlName="home_score"
+            placeholder="0"
+            min="0"
+            class="score-input"
+          >
+        </div>
+        <span class="separator">-</span>
+        <div class="score-group">
+          <label>{{ selectedMatch.away_team?.name }}</label>
+          <input
+            type="number"
+            formControlName="away_score"
+            placeholder="0"
+            min="0"
+            class="score-input"
+          >
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="resultForm.invalid || loading" class="btn btn-primary">
+          <span *ngIf="loading">Guardando...</span>
+          <span *ngIf="!loading">Guardar Resultado</span>
+        </button>
+        <button type="button" (click)="cancelResult()" class="btn btn-secondary">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <p *ngIf="!loading && matches.length === 0 && !selectedMatch" class="no-matches">
+    No hay partidos pendientes por jugar.
+  </p>
+</div>

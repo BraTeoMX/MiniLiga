@@ -21,6 +21,19 @@ export interface Standing {
   points: number;
 }
 
+export interface Match {
+  id: number;
+  home_team_id: number;
+  away_team_id: number;
+  home_score: number | null;
+  away_score: number | null;
+  played_at: string | null;
+  created_at: string;
+  updated_at: string;
+  home_team?: Team;
+  away_team?: Team;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -39,5 +52,13 @@ export class Api {
 
   getStandings(): Observable<Standing[]> {
     return this.http.get<Standing[]>(`${this.baseUrl}/standings`);
+  }
+
+  getPendingMatches(): Observable<Match[]> {
+    return this.http.get<Match[]>(`${this.baseUrl}/matches?played=false`);
+  }
+
+  reportResult(id: number, payload: { home_score: number; away_score: number }): Observable<Match> {
+    return this.http.post<Match>(`${this.baseUrl}/matches/${id}/result`, payload);
   }
 }
