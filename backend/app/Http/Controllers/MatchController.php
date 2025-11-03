@@ -9,6 +9,26 @@ use Illuminate\Http\JsonResponse;
 class MatchController extends Controller
 {
     /**
+     * Display a listing of pending matches.
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $query = FootballMatch::with(['homeTeam', 'awayTeam']);
+
+        // Filter by played status if specified
+        if ($request->has('played')) {
+            $played = $request->boolean('played');
+            if ($played) {
+                $query->whereNotNull('home_score')->whereNotNull('away_score');
+            } else {
+                $query->whereNull('home_score')->whereNull('away_score');
+            }
+        }
+
+        return response()->json($query->get());
+    }
+
+    /**
      * Store result for a specific match.
      */
     public function storeResult(Request $request, string $id): JsonResponse

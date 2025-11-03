@@ -11,5 +11,6 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::apiResource('teams', TeamController::class)->only(['index', 'store']);
+Route::get('matches', [MatchController::class, 'index']);
 Route::post('matches/{id}/result', [MatchController::class, 'storeResult']);
 Route::get('standings', [StandingsController::class, 'index']);
