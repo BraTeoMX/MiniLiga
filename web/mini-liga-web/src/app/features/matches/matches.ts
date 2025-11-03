@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Api, Match } from '../../services/api';
+import { Api, Match, Team } from '../../services/api';
 
 @Component({
   selector: 'app-matches',
@@ -11,20 +11,40 @@ import { Api, Match } from '../../services/api';
 })
 export class Matches implements OnInit {
   matches: Match[] = [];
+  teams: Team[] = [];
   selectedMatch: Match | null = null;
   resultForm: FormGroup;
+  createMatchForm: FormGroup;
   loading = false;
   error: string | null = null;
+  showCreateForm = false;
 
   constructor(private api: Api, private fb: FormBuilder) {
     this.resultForm = this.fb.group({
       home_score: ['', [Validators.required, Validators.min(0)]],
       away_score: ['', [Validators.required, Validators.min(0)]]
     });
+
+    this.createMatchForm = this.fb.group({
+      home_team_id: ['', Validators.required],
+      away_team_id: ['', Validators.required]
+    });
   }
 
   ngOnInit() {
     this.loadPendingMatches();
+    this.loadTeams();
+  }
+
+  loadTeams() {
+    this.api.getTeams().subscribe({
+      next: (teams) => {
+        this.teams = teams;
+      },
+      error: (err) => {
+        console.error('Error loading teams:', err);
+      }
+    });
   }
 
   loadPendingMatches() {
@@ -72,5 +92,39 @@ export class Matches implements OnInit {
   cancelResult() {
     this.selectedMatch = null;
     this.resultForm.reset();
+  }
+
+  toggleCreateForm() {
+    this.showCreateForm = !this.showCreateForm;
+    if (!this.showCreateForm) {
+      this.createMatchForm.reset();
+    }
+  }
+
+  onCreateMatch() {
+    if (this.createMatchForm.valid) {
+      this.loading = true;
+      this.error = null;
+
+      this.api.createMatch(this.createMatchForm.value).subscribe({
+        next: (newMatch) => {
+          // Add the new match to the list
+          this.matches.push(newMatch);
+          this.showCreateForm = false;
+          this.createMatchForm.reset();
+          this.loading = false;
+        },
+        error: (err) => {
+          this.error = 'Error creating match';
+          this.loading = false;
+          console.error('Error creating match:', err);
+        }
+      });
+    }
+  }
+
+  cancelCreateMatch() {
+    this.showCreateForm = false;
+    this.createMatchForm.reset();
   }
 }

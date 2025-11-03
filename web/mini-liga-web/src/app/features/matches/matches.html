@@ -6,10 +6,48 @@
       <span *ngIf="loading">Actualizando...</span>
       <span *ngIf="!loading">Actualizar</span>
     </button>
+    <button (click)="toggleCreateForm()" class="btn btn-secondary">
+      <span *ngIf="!showCreateForm">Crear Partido</span>
+      <span *ngIf="showCreateForm">Cancelar</span>
+    </button>
   </div>
 
   <div *ngIf="error" class="alert alert-error">
     {{ error }}
+  </div>
+
+  <!-- Formulario para crear partido -->
+  <div *ngIf="showCreateForm" class="create-match-section">
+    <h3>Crear Nuevo Partido</h3>
+    <form [formGroup]="createMatchForm" (ngSubmit)="onCreateMatch()" class="create-match-form">
+      <div class="team-selectors">
+        <div class="team-selector">
+          <label>Equipo Local</label>
+          <select formControlName="home_team_id" class="team-select">
+            <option value="">Seleccionar equipo local</option>
+            <option *ngFor="let team of teams" [value]="team.id">{{ team.name }}</option>
+          </select>
+        </div>
+        <span class="vs-large">vs</span>
+        <div class="team-selector">
+          <label>Equipo Visitante</label>
+          <select formControlName="away_team_id" class="team-select">
+            <option value="">Seleccionar equipo visitante</option>
+            <option *ngFor="let team of teams" [value]="team.id">{{ team.name }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="createMatchForm.invalid || loading" class="btn btn-primary">
+          <span *ngIf="loading">Creando...</span>
+          <span *ngIf="!loading">Crear Partido</span>
+        </button>
+        <button type="button" (click)="cancelCreateMatch()" class="btn btn-secondary">
+          Cancelar
+        </button>
+      </div>
+    </form>
   </div>
 
   <div *ngIf="loading && matches.length === 0" class="loading">Cargando partidos...</div>

@@ -61,4 +61,8 @@ export class Api {
   reportResult(id: number, payload: { home_score: number; away_score: number }): Observable<Match> {
     return this.http.post<Match>(`${this.baseUrl}/matches/${id}/result`, payload);
   }
+
+  createMatch(payload: { home_team_id: number; away_team_id: number }): Observable<Match> {
+    return this.http.post<Match>(`${this.baseUrl}/matches`, payload);
+  }
 }

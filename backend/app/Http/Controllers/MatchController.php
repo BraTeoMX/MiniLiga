@@ -29,6 +29,21 @@ class MatchController extends Controller
     }
 
     /**
+     * Store a newly created match.
+     */
+    public function store(Request $request): JsonResponse
+    {
+        $request->validate([
+            'home_team_id' => 'required|exists:teams,id',
+            'away_team_id' => 'required|exists:teams,id|different:home_team_id'
+        ]);
+
+        $match = FootballMatch::create($request->only(['home_team_id', 'away_team_id']));
+
+        return response()->json($match->load(['homeTeam', 'awayTeam']), 201);
+    }
+
+    /**
      * Store result for a specific match.
      */
     public function storeResult(Request $request, string $id): JsonResponse
