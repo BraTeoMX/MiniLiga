@@ -1,0 +1,47 @@
+<div class="container">
+  <h2>Clasificación</h2>
+
+  <div class="actions">
+    <button (click)="refreshStandings()" [disabled]="loading" class="btn btn-primary">
+      <span *ngIf="loading">Actualizando...</span>
+      <span *ngIf="!loading">Actualizar</span>
+    </button>
+  </div>
+
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="loading && standings.length === 0" class="loading">Cargando clasificación...</div>
+
+  <table *ngIf="standings.length > 0" class="standings-table">
+    <thead>
+      <tr>
+        <th>Posición</th>
+        <th>Equipo</th>
+        <th>PJ</th>
+        <th>GF</th>
+        <th>GC</th>
+        <th>DG</th>
+        <th>Puntos</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let standing of standings; let i = index" [class.highlight]="i < 3">
+        <td class="position">{{ i + 1 }}</td>
+        <td class="team">{{ standing.team }}</td>
+        <td>{{ standing.played }}</td>
+        <td>{{ standing.goals_for }}</td>
+        <td>{{ standing.goals_against }}</td>
+        <td [class.positive]="standing.goal_diff > 0" [class.negative]="standing.goal_diff < 0">
+          {{ standing.goal_diff > 0 ? '+' : '' }}{{ standing.goal_diff }}
+        </td>
+        <td class="points">{{ standing.points }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="!loading && standings.length === 0" class="no-standings">
+    No hay datos de clasificación disponibles.
+  </p>
+</div>

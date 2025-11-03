@@ -1,0 +1,57 @@
+<div class="container">
+  <h2>Equipos</h2>
+
+  <div class="form-section">
+    <h3>Crear Nuevo Equipo</h3>
+    <form [formGroup]="teamForm" (ngSubmit)="onSubmit()" class="team-form">
+      <div class="form-group">
+        <label for="name">Nombre del Equipo:</label>
+        <input
+          type="text"
+          id="name"
+          formControlName="name"
+          placeholder="Ingresa el nombre del equipo"
+          class="form-control"
+        >
+        <div *ngIf="teamForm.get('name')?.invalid && teamForm.get('name')?.touched" class="error">
+          <span *ngIf="teamForm.get('name')?.errors?.['required']">El nombre es requerido</span>
+          <span *ngIf="teamForm.get('name')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+        </div>
+      </div>
+      <button type="submit" [disabled]="teamForm.invalid || loading" class="btn btn-primary">
+        <span *ngIf="loading">Creando...</span>
+        <span *ngIf="!loading">Crear Equipo</span>
+      </button>
+    </form>
+  </div>
+
+  <div *ngIf="error" class="alert alert-error">
+    {{ error }}
+  </div>
+
+  <div class="teams-section">
+    <h3>Lista de Equipos</h3>
+    <div *ngIf="loading && teams.length === 0" class="loading">Cargando equipos...</div>
+    <table *ngIf="teams.length > 0" class="teams-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Goles a Favor</th>
+          <th>Goles en Contra</th>
+          <th>Fecha de Creación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let team of teams">
+          <td>{{ team.id }}</td>
+          <td>{{ team.name }}</td>
+          <td>{{ team.goals_for }}</td>
+          <td>{{ team.goals_against }}</td>
+          <td>{{ team.created_at | date:'short' }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <p *ngIf="!loading && teams.length === 0" class="no-teams">No hay equipos registrados aún.</p>
+  </div>
+</div>
